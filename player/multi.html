@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShowBuilder — Multi Player</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { background: #111; padding: 12px; box-sizing: border-box; }
+
+    h1 { color: #888; font-family: monospace; font-size: 13px; margin-bottom: 12px; }
+
+    /* Row of small players */
+    .player-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .player-cell {
+      flex: 1;
+      min-width: 0;
+    }
+    .player-cell h2 {
+      color: #666;
+      font-family: monospace;
+      font-size: 11px;
+      margin-bottom: 4px;
+    }
+
+    /* Each player widget lives in a .player-host div */
+    .player-host {
+      width: 100%;
+      background: #000;
+    }
+
+    /* Control strip under each player */
+    .player-controls {
+      display: flex;
+      gap: 4px;
+      margin-top: 4px;
+    }
+    .player-controls button {
+      flex: 1;
+      font-family: monospace;
+      font-size: 11px;
+      background: #222;
+      color: #ccc;
+      border: 1px solid #444;
+      padding: 3px 6px;
+      cursor: pointer;
+    }
+    .player-controls button:hover { background: #333; }
+
+    /* Wide player at the bottom */
+    .player-wide {
+      margin-bottom: 12px;
+    }
+    .player-wide h2 {
+      color: #666;
+      font-family: monospace;
+      font-size: 11px;
+      margin-bottom: 4px;
+    }
+    .player-wide .player-host {
+      width: 60%;
+    }
+    .player-wide .player-controls { width: 60%; }
+
+    /* Global controls */
+    .global-controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .global-controls button {
+      font-family: monospace;
+      font-size: 11px;
+      background: #1a3a1a;
+      color: #8f8;
+      border: 1px solid #3a6a3a;
+      padding: 4px 12px;
+      cursor: pointer;
+    }
+    .global-controls button:hover { background: #2a4a2a; }
+  </style>
+</head>
+<body>
+  <h1>ShowBuilder — Multiple Player Instances (masks:false, local video)</h1>
+
+  <div class="global-controls">
+    <button onclick="playAll()">&#9654; Play All</button>
+    <button onclick="stopAll()">&#9632; Stop All</button>
+  </div>
+
+  <!-- Three small players in a row -->
+  <div class="player-row">
+    <div class="player-cell">
+      <h2>Player A — zoom_in</h2>
+      <div class="player-host" id="host-a"></div>
+      <div class="player-controls">
+        <button onclick="players.a.playShow()">Play</button>
+        <button onclick="players.a.stopShow()">Stop</button>
+      </div>
+    </div>
+    <div class="player-cell">
+      <h2>Player B — no effect</h2>
+      <div class="player-host" id="host-b"></div>
+      <div class="player-controls">
+        <button onclick="players.b.playShow()">Play</button>
+        <button onclick="players.b.stopShow()">Stop</button>
+      </div>
+    </div>
+    <div class="player-cell">
+      <h2>Player C — pan_left</h2>
+      <div class="player-host" id="host-c"></div>
+      <div class="player-controls">
+        <button onclick="players.c.playShow()">Play</button>
+        <button onclick="players.c.stopShow()">Stop</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- One wider player at 60% width -->
+  <div class="player-wide">
+    <h2>Player D — zoom_in + pan_left (wide, 60% viewport)</h2>
+    <div class="player-host" id="host-d"></div>
+    <div class="player-controls">
+      <button onclick="players.d.playShow()">Play</button>
+      <button onclick="players.d.stopShow()">Stop</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // Crop detected for all three dev clips: {w:480, h:360, x:80, y:0}
+    var CROP = {w: 480, h: 360, x: 80, y: 0};
+
+    var FORMAT_4_3 = {width_px: 480, height_px: 360};
+
+    function makeShow(clips) {
+      return {
+        sequence_name:     'multi-demo',
+        total_duration_ms: clips.reduce(function(s,c){ return s + c.dur; }, 0),
+        format:            FORMAT_4_3,
+        items: clips.map(function(c, i) {
+          return {
+            item_id:      'item_' + i,
+            asset_type:   'video',
+            src:          '/media/' + c.file,
+            src_crop:     CROP,
+            media_start_s: 0.0,
+            duration_ms:  c.dur,
+            effect_name:  c.effect || '',
+            effect_params: c.params || {},
+            transition_in:  '',
+            transition_out: '',
+            overlays: [],
+          };
+        }),
+      };
+    }
+
+    var OPT = {masks: false};  // embedded players -- no full-viewport masks needed
+
+    var players = {
+      a: window.createPlayer(document.getElementById('host-a'), OPT),
+      b: window.createPlayer(document.getElementById('host-b'), OPT),
+      c: window.createPlayer(document.getElementById('host-c'), OPT),
+      d: window.createPlayer(document.getElementById('host-d'), OPT),
+    };
+
+    // Each small player shows one clip in a looping single-item show.
+    players.a.loadShow(makeShow([{file:'A_clip1.mp4', dur:5000, effect:'zoom_in',  params:{from:1.0,to:1.35}}]));
+    players.b.loadShow(makeShow([{file:'A_clip2.mp4', dur:5000}]));
+    players.c.loadShow(makeShow([{file:'A_clip3.mp4', dur:5000, effect:'pan_left'}]));
+
+    // Wide player plays all three clips back-to-back.
+    players.d.loadShow(makeShow([
+      {file:'A_clip1.mp4', dur:5000, effect:'zoom_in',  params:{from:1.0,to:1.35}},
+      {file:'A_clip2.mp4', dur:5000},
+      {file:'A_clip3.mp4', dur:5000, effect:'pan_left'},
+    ]));
+
+    function playAll() {
+      Object.keys(players).forEach(function(k){ players[k].playShow(); });
+    }
+    function stopAll() {
+      Object.keys(players).forEach(function(k){ players[k].stopShow(); });
+    }
+  </script>
+</body>
+</html>

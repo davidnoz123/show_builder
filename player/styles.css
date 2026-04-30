@@ -1,0 +1,121 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    background: #000;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+/* Stage: aspect-ratio maintained, fills viewport width, capped by height */
+.sb-stage {
+    position: relative;
+    width: 100%;
+    max-height: calc(100vh - 28px);
+    aspect-ratio: 16 / 9;   /* overridden by JS from format */
+    background: #000;
+    overflow: hidden;
+    clip-path: inset(0);    /* compositor-level clip -- contains OOPIF (YouTube iframe) zoom overflow */
+    flex-shrink: 0;
+}
+
+/* Picture-frame overlay: sits above OOPIFs (YouTube iframes) in the compositor
+   stacking order and covers any overflow that escapes CSS clip on OOPIF layers.
+   Extends 300px beyond the stage in every direction so zoom overflow is always
+   masked regardless of scale factor. */
+.sb-stage-frame {
+    position: absolute;
+    inset: -300px;
+    border: 300px solid #000;
+    pointer-events: none;
+    z-index: 9000;
+    box-sizing: border-box;
+}
+
+/* Media and overlay layers fill the stage */
+.sb-media-layer,
+.sb-overlay-layer {
+    position: absolute;
+    inset: 0;
+}
+
+.sb-media-layer { overflow: hidden; }
+
+.sb-overlay-layer {
+    pointer-events: none;
+}
+
+/* Media elements fill their layer */
+.sb-media-layer img,
+.sb-media-layer video,
+.sb-media-layer iframe {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}
+
+/* fit_mode variants */
+.sb-media-layer img.fit-cover,
+.sb-media-layer video.fit-cover    { object-fit: cover; }
+.sb-media-layer img.fit-contain,
+.sb-media-layer video.fit-contain  { object-fit: contain; }
+.sb-media-layer img.fit-stretch,
+.sb-media-layer video.fit-stretch  { object-fit: fill; }
+.sb-media-layer img.fit-none,
+.sb-media-layer video.fit-none     { object-fit: none; }
+
+/* Text overlays */
+.overlay-text {
+    position: absolute;
+    color: #fff;
+    font-family: sans-serif;
+    font-size: 1.4em;
+    line-height: 1.35;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.85);
+    white-space: pre-wrap;
+    padding: 0.25em 0.6em;
+    max-width: 90%;
+}
+
+/* Stage-edge masks: four fixed-position same-origin divs appended to body
+   by createPlayer(). They composite above YouTube OOPIF layers, covering any
+   zoom overflow that escapes past the stage boundary. Positioned by JS (_updateMasks). */
+.sb-mask {
+    position: fixed;
+    background: #000;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+/* Debug bar */
+.sb-debug-bar {
+    width: 100%;
+    height: 24px;
+    flex-shrink: 0;
+    background: rgba(0,0,0,0.75);
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+}
+
+.sb-debug-info {
+    font-family: monospace;
+    font-size: 11px;
+    color: #8f8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

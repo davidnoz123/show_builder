@@ -1,0 +1,10 @@
+# Copy this file to locals.txt and fill in your paths.
+# locals.txt is gitignored — never commit it.
+# Paths may be relative (from repo root) or absolute.
+
+# Path to python.exe in your venv.
+PYTHON=..\lexi\demos\venv\Scripts\python.exe
+
+# Paths to sibling repos. Relative paths work if repos are cloned side-by-side.
+VERSHOLN_DIR=..\versholn
+AGENT_STANDARDS_DIR=..\nielsoln_agent_standards

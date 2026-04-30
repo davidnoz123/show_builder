@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+venv/
+.venv/
+
+# OS
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# iCloud session cookies and media cache
+.icloud_sessions/
+media/cache/
+media/*.mp4
+
+# VS Code workspace settings
+.vscode/
+
+# Excel workbooks (binary, large)
+*.xlsm
+~$*.xlsm
+
+# Secrets / local config
+locals.txt
+
+# Generated data exports
+*.zip
