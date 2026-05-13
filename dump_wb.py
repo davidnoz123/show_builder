@@ -21,6 +21,8 @@ import sys
 import sqlite3
 import argparse
 
+_log = lambda msg: print(msg, file=sys.stderr)
+
 # ---------------------------------------------------------------------------
 # Schema DDL -- loaded from schema.sql at runtime
 # ---------------------------------------------------------------------------
@@ -243,4 +245,11 @@ if __name__ == "__main__":
         help="Output SQLite database path",
     )
     args = parser.parse_args()
-    dump(args.wb, args.db)
+    try:
+        dump(args.wb, args.db)
+    except SystemExit:
+        raise
+    except Exception:
+        import traceback
+        _log(f"FATAL unhandled exception:\n{traceback.format_exc()}")
+        raise

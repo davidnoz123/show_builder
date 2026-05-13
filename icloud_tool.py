@@ -28,7 +28,7 @@ import urllib.request
 # Allow running directly: python icloud_tool.py
 sys.path.insert(0, os.path.dirname(__file__))
 
-import win32com.client as wc
+_log = lambda msg: print(msg, file=sys.stderr)
 
 from icloud_sync import (
     KEYRING_SERVICE,
@@ -49,6 +49,7 @@ from workbook_io import read_workbook, seed_workbook, _str
 # ---------------------------------------------------------------------------
 
 def _open_wb(path: str):
+    import win32com.client as wc
     xl = wc.Dispatch("Excel.Application")
     xl.Visible = False
     xl.DisplayAlerts = False
@@ -489,4 +490,11 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except SystemExit:
+        raise
+    except Exception:
+        import traceback
+        _log(f"FATAL unhandled exception:\n{traceback.format_exc()}")
+        raise

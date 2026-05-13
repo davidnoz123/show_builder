@@ -8,3 +8,7 @@ PYTHON=..\lexi\demos\venv\Scripts\python.exe
 # Paths to sibling repos. Relative paths work if repos are cloned side-by-side.
 VERSHOLN_DIR=..\versholn
 AGENT_STANDARDS_DIR=..\nielsoln_agent_standards
+
+# Path to the ShowBuilder media directory (MP4 clips and slide images).
+# Defaults to the media/ folder inside this repo; override if media lives elsewhere.
+SHOWBUILDER_MEDIA_DIR=media

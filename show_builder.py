@@ -45,6 +45,19 @@ _EXPORTS: dict[str, str] = {
     "find_table_row":       "workbook_io",
     "seed_workbook":        "workbook_io",
     "_str":                 "workbook_io",
+    # schema
+    "Asset":                "schema",
+    "Format":               "schema",
+    "Item":                 "schema",
+    "Sequence":             "schema",
+    "SequenceEntry":        "schema",
+    "ShowbookData":         "schema",
+    "TextSet":              "schema",
+    "TextOverlay":          "schema",
+    "Style":                "schema",
+    # resolver
+    "resolve":              "resolver",
+    "build_show_json":      "resolver",
 }
 
 
