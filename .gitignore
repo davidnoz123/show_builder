@@ -31,3 +31,6 @@ locals.txt
 
 # Generated data exports
 *.zip
+
+# Agent local overrides (machine-specific, must not be committed)
+AGENTS.local.md
