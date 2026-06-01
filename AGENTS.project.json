@@ -5,5 +5,8 @@
     "profiles/python-integration",
     "profiles/python-excel-vba",
     "profiles/python-chrome-cdp"
+  ],
+  "path_check_ignore": [
+    "lexi"
   ]
 }
